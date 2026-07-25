@@ -13,27 +13,6 @@ async function run(filename: string) {
     const input = await Deno.readTextFile(filename)
     const program = parser.produceAST(input)
     const result = evaluate(program, env)
-    console.log(result)
-}
-
-function _repl() {
-    const parser = new Parser();
-    const env = createGlobalEnv()
-
-    // main repl
-    console.log("Repl v0.1")
-
-    while (true) {
-        const input = prompt(">");
-
-        if (!input || input.includes("exit")) {
-            Deno.exit(1);
-        } 
-
-        const program = parser.produceAST(input); // produceAST includes lexer
-        const result = evaluate(program, env)
-        console.log(result)        
-    }
 }
 
 /* 

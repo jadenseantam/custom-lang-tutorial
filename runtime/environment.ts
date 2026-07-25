@@ -1,14 +1,25 @@
 // This file is for declaring variables
 
-import { MK_BOOL, MK_NULL, RuntimeVal } from "./values.ts";
+import { MK_BOOL, MK_NATIVE_FN, MK_NULL, MK_NUMBER, RuntimeVal } from "./values.ts";
 
 export function createGlobalEnv() {
     const env = new Environment()
 
-    // declaring system variables
+    // declaring global environment
     env.declareVar("true", MK_BOOL(true), true)
     env.declareVar("false", MK_BOOL(false), true)
     env.declareVar("null", MK_NULL(), true)
+
+    // define a native built-in method
+    env.declareVar("print", MK_NATIVE_FN((args) => {
+        console.log(...args);
+        return MK_NULL()
+    }),true)
+    
+    function timeFunction(args: RuntimeVal[], env: Environment) {
+        return MK_NUMBER(Date.now())
+    }
+    env.declareVar("time", MK_NATIVE_FN(timeFunction), true)
 
     return env
 }
@@ -19,7 +30,6 @@ export default class Environment {
     private constants: Set<string>;
 
     constructor (parentENV?: Environment) {
-        const global = parentENV ? true : false
         this.parent = parentENV
         this.variables = new Map()  
         this.constants = new Set()

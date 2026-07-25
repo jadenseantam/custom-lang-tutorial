@@ -1,5 +1,7 @@
+import Environment from "./environment.ts";
+
 // define the types used in the runtime
-export type ValueType = "null" | "number" | "boolean" | "object"
+export type ValueType = "null" | "number" | "boolean" | "object" | "native-fn"
 
 // runtime value is the type exists in custlan
 export interface RuntimeVal {
@@ -36,4 +38,15 @@ export function MK_BOOL(b = true): BooleanVal {
 export interface ObjectVal extends RuntimeVal {
     type: "object", 
     properties: Map<string, RuntimeVal>
+}
+
+export type FunctionCall = (args: RuntimeVal[], env: Environment) => RuntimeVal
+
+export interface NativeFnValue extends RuntimeVal {
+    type: "native-fn", 
+    call: FunctionCall
+}
+
+export function MK_NATIVE_FN(call: FunctionCall) {
+    return { type: "native-fn", call } as NativeFnValue
 }
