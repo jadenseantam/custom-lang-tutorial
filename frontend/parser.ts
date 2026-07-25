@@ -4,6 +4,7 @@ import {
     BinaryExpr,
     CallExpr,
     Expr,
+    FunctionDeclaration,
     Identifier,
     MemberExpr,
     NumericLiteral,
@@ -61,9 +62,60 @@ export default class Parser {
             case TokenType.Let:
             case TokenType.Const:
                 return this.parse_var_declaration();
+            case TokenType.Fn:
+                return this.parse_fn_declaration();
             default:
                 return this.parse_expr();
         }
+    }
+
+    private parse_fn_declaration(): Stmt {
+        this.eat(); // eats fn keyword
+        const name =
+            this.expect(
+                TokenType.Identifier,
+                "Expected function name after fn keyword",
+            ).value; // throw an error if function name doesnt exist
+
+        const args = this.parse_args(); // get all args (reads them)
+        const params: string[] = [];
+
+        for (const arg of args) {
+            if (arg.kind !== "Identifier") {
+                console.log(arg);
+                throw `Expected params to be type of string inside function declaration `;
+            }
+
+            params.push((arg as Identifier).symbol);
+        }
+
+        this.expect(
+            TokenType.OpenBrace,
+            "Expected function body after declaration",
+        );
+
+        const body: Stmt[] = [];
+
+        while (
+            this.at().type !== TokenType.EOF &&
+            this.at().type !== TokenType.CloseBrace
+        ) {
+            body.push(this.parse_stmt());
+        } // loop until body block ends
+
+        this.expect(
+            TokenType.CloseBrace,
+            "Expected closing brace inside function declaration",
+        );
+
+        const fn = {
+            body,
+            name,
+            parameters: params,
+            kind: "FunctionDeclaration",
+        } as FunctionDeclaration;
+
+        return fn;
     }
 
     private parse_var_declaration(): Stmt {
@@ -362,5 +414,5 @@ KNOWLEDGE LEARNT:
 
 // parse out lhs (which allows foo.x() to be computed)
 // if not computed, go to primary expr
-/// parse if we are at openparen, then parse call expr, 
+/// parse if we are at openparen, then parse call expr,
 // call expr takes in caller, lhs is call_expr, parses args list (open paren, 0 or more expr separated by commas)
