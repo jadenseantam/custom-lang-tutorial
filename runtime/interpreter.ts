@@ -1,8 +1,8 @@
 import { NumberVal, RuntimeVal } from "./values.ts";
-import { Program, BinaryExpr, NumericLiteral, Stmt, Identifier, VarDeclaration, AssignmentExpr, ObjectLiteral, CallExpr } from "../frontend/ast.ts";
+import { Program, BinaryExpr, NumericLiteral, Stmt, Identifier, VarDeclaration, AssignmentExpr, ObjectLiteral, CallExpr, FunctionDeclaration } from "../frontend/ast.ts";
 import Environment from "./environment.ts";
 import { eval_identifier, evaluate_binary_expr, eval_assignment, eval_object_expr, eval_call_expr } from "./eval/expressions.ts";
-import { eval_program, eval_var_declaration } from "./eval/statements.ts";
+import { eval_program, eval_var_declaration, eval_function_declaration } from "./eval/statements.ts";
 
 
 export function evaluate(astNode: Stmt, env: Environment): RuntimeVal { // this is the heart of the interpreter, it switches through different AST nodes and evaluates them
@@ -26,6 +26,8 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeVal { // this 
             return eval_program(astNode as Program, env)
         case "VarDeclaration": 
             return eval_var_declaration(astNode as VarDeclaration, env)
+        case "FunctionDeclaration": 
+            return eval_function_declaration(astNode as FunctionDeclaration, env)
         default:
             console.error("This AST Node has not yet been set up for interpretation.", "\n",  astNode)
             Deno.exit(1)

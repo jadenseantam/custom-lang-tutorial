@@ -13,6 +13,7 @@ export enum TokenType {
     // Keywords
     Let, 
     Const, 
+    Fn, 
 
     // Grouping / Operators
     Equals,
@@ -31,7 +32,8 @@ export enum TokenType {
 // Define all Keywords (Record<string, TokenType> is for objects: "string": "TokenType")
 const KEYWORDS: Record<string, TokenType> = {
     let: TokenType.Let,
-    const: TokenType.Const, 
+    const: TokenType.Const,
+    fn: TokenType.Fn
 }
 
 // Define the structure of a Token (must include the value & TokenType)
